@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "reranklab",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-01",
+  // run the Worker on every request (not just non-asset paths) so the www→apex redirect applies to pages too
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": true },
+  "routes": [
+    { "pattern": "reranklab.com", "custom_domain": true },
+    { "pattern": "www.reranklab.com", "custom_domain": true }
+  ],
+  // 5 contact submissions per IP per minute
+  "ratelimits": [{ "name": "RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }],
+  "observability": { "enabled": true }
+}
