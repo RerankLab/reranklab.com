@@ -12,14 +12,14 @@ wrangler.jsonc   Worker config: custom domains, rate limit, assets
 
 Push to `main` — the GitHub Action runs `wrangler deploy`. It needs a `CLOUDFLARE_API_TOKEN` repo secret (Workers Scripts:Edit, Workers Assets:Edit, Zone:Read on reranklab.com).
 
-Manual: `npx wrangler deploy`
+Manual: `npm run deploy`
 
 Secrets (set once, not in the repo): `npx wrangler secret put DISCORD_WEBHOOK_URL`
 
 ## Local dev
 
 ```bash
-npx wrangler dev
+npm run dev
 ```
 
 Put a test webhook in `.dev.vars` (`DISCORD_WEBHOOK_URL=...`); it is git-ignored.
