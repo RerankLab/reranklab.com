@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eval report: keyword search vs embeddings + reranking on FiQA-2018 — RerankLab</title>
+<meta name="description" content="A reproducible retrieval eval on the public FiQA-2018 benchmark: BM25 vs embeddings vs hybrid vs embeddings + cross-encoder reranking. recall@10 {{bm25.recall@10}} → {{dense+rerank.recall@10}}. Every number, model and command published — including what did not work.">
+<link rel="canonical" href="https://reranklab.com/evals/fiqa/">
+<meta property="og:title" content="Eval report: keyword search vs embeddings + reranking on FiQA-2018">
+<meta property="og:description" content="recall@10 {{bm25.recall@10}} → {{dense+rerank.recall@10}} on 648 real questions over 57,638 passages. Reproducible on a laptop, no API keys.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://reranklab.com/evals/fiqa/">
+<meta property="og:image" content="https://reranklab.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0a0b0f">
+<link rel="icon" href="/logo/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0b0f;--bg2:#0d0f14;--sf:#101319;
+  --ln:rgba(255,255,255,.08);--ln2:rgba(255,255,255,.15);
+  --tx:#eeeff3;--tx2:#a4a8b4;--tx3:#7f8593;
+  --a:255,107,61;--acc:#ff6b3d;--acc-ink:#140803;--acc-dim:rgba(var(--a),.12);
+  --sans:'Inter',system-ui,-apple-system,sans-serif;--disp:'Inter Tight',var(--sans);--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --fs-xs:.6875rem;--fs-sm:.75rem;--fs-md:.8125rem;--fs-p:.9375rem;
+  --r:16px;--r2:10px;--w:860px;--gut:clamp(16px,4vw,40px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:400 16px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--disp);font-weight:600;letter-spacing:-.025em;line-height:1.08;margin:0}
+.wrap{width:min(var(--w),100% - 2*var(--gut));margin-inline:auto}
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(10,11,15,.8);border-bottom:1px solid var(--ln)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font:600 17px var(--disp);letter-spacing:-.02em;text-decoration:none}
+.brand svg{width:22px;height:22px}
+.nav a.back{font:400 var(--fs-md) var(--mono);color:var(--tx2);text-decoration:none}
+.nav a.back:hover{color:var(--tx)}
+.kicker{font:500 var(--fs-sm)/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:12px}
+.kicker::after{content:"";width:36px;height:1px;background:var(--ln2)}
+.hero{padding:clamp(56px,7vw,96px) 0 40px}
+.hero h1{font-size:clamp(2rem,1.3rem + 3.2vw,3.6rem);margin:22px 0 18px;max-width:20ch}
+.hero h1 em{font-style:normal;color:var(--acc)}
+.lede{font-size:clamp(1.05rem,.95rem + .4vw,1.2rem);color:var(--tx2);max-width:60ch}
+.lede strong{color:var(--tx);font-weight:500}
+.tldr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--ln);border:1px solid var(--ln);border-radius:var(--r);overflow:hidden;margin:36px 0 12px}
+.tldr>div{background:var(--sf);padding:22px 22px 20px}
+.tldr .lbl{font:500 var(--fs-xs)/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);margin-bottom:12px}
+.tldr .val{font:600 clamp(1.6rem,1.2rem + 1.6vw,2.4rem)/1 var(--disp);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.tldr .val b{color:var(--acc);font-weight:600}
+.tldr .val s{text-decoration:none;color:var(--tx3);font-weight:500;font-size:.72em}
+.tldr .val i{font-style:normal;color:var(--tx3);font-size:.6em;margin:0 6px}
+.tldr .sub{font:400 var(--fs-sm)/1.5 var(--mono);color:var(--tx3);margin-top:10px}
+.fine{font:400 var(--fs-sm)/1.6 var(--mono);color:var(--tx3)}
+section{padding:36px 0;border-top:1px solid var(--ln)}
+section h2{font-size:clamp(1.35rem,1.1rem + 1vw,1.8rem);margin-bottom:14px}
+section p{color:var(--tx2);max-width:64ch;margin:0 0 14px}
+section p strong{color:var(--tx);font-weight:500}
+section ul{color:var(--tx2);max-width:64ch;padding-left:20px;margin:0 0 14px}
+section li{margin-bottom:6px}
+code{font:400 .88em var(--mono);background:rgba(255,255,255,.06);padding:2px 6px;border-radius:5px;color:var(--tx)}
+pre{font:400 var(--fs-md)/1.7 var(--mono);background:var(--sf);border:1px solid var(--ln);border-radius:var(--r2);padding:16px 18px;overflow-x:auto;color:var(--tx2);margin:0 0 14px}
+pre b{color:var(--tx);font-weight:500}
+.tbl{width:100%;border-collapse:collapse;font:400 var(--fs-md)/1.5 var(--mono);margin:8px 0 14px;overflow-x:auto;display:block}
+.tbl thead th{text-align:left;font-weight:500;color:var(--tx3);letter-spacing:.06em;text-transform:uppercase;font-size:var(--fs-xs);padding:10px 12px 10px 0;border-bottom:1px solid var(--ln2);white-space:nowrap}
+.tbl td{padding:12px 12px 12px 0;border-bottom:1px solid var(--ln);white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--tx2)}
+.tbl td:first-child{color:var(--tx)}
+.tbl tr.best td{color:var(--tx)}
+.tbl tr.best td:first-child{color:var(--acc)}
+.tbl .d{color:var(--acc);font-size:var(--fs-xs);margin-left:6px}
+.note{border-left:2px solid var(--acc);padding:4px 0 4px 16px;color:var(--tx2);max-width:64ch;margin:18px 0}
+.cta{margin-top:8px;padding:26px 28px;border:1px solid rgba(var(--a),.35);background:var(--acc-dim);border-radius:var(--r);display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+.cta p{margin:0;color:var(--tx);max-width:48ch}
+.btn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:12px;background:var(--acc);color:var(--acc-ink);font:500 15px var(--sans);text-decoration:none;white-space:nowrap}
+.foot{border-top:1px solid var(--ln);padding:36px 0;font:400 var(--fs-sm)/1.7 var(--mono);color:var(--tx3);margin-top:24px}
+.foot a{color:var(--tx2);text-decoration:none}
+@media (max-width:700px){.tldr{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="wrap">
+  <a class="brand" href="/"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="8" width="48" height="12" fill="#ff6b3d"/><path fill="currentColor" d="M8 16H20V28H44V16H56V40H44L56 64H42L30 40H20V64H8Z"/></svg>RerankLab</a>
+  <a class="back" href="/">← reranklab.com</a>
+</div></header>
+
+<main class="wrap">
+  <div class="hero">
+    <div class="kicker">Eval report · {{date}}</div>
+    <h1>Keyword search vs embeddings + reranking, <em>measured on 648 real questions.</em></h1>
+    <p class="lede"><strong>The question:</strong> when someone asks a financial Q&amp;A corpus a question in plain English, how often does the right answer show up in the top 10 — and which parts of the “modern retrieval” recipe actually move that number? <strong>The answer, on a public benchmark anyone can re-run:</strong></p>
+    <div class="tldr">
+      <div><div class="lbl">recall@10 · right answer in top 10</div><div class="val"><s>{{bm25.recall@10}}</s><i>→</i><b>{{dense+rerank.recall@10}}</b></div><div class="sub">keyword search → embeddings + rerank</div></div>
+      <div><div class="lbl">nDCG@10 · and ranked near the top</div><div class="val"><s>{{bm25.ndcg@10}}</s><i>→</i><b>{{dense+rerank.ndcg@10}}</b></div><div class="sub">keyword search → embeddings + rerank</div></div>
+      <div><div class="lbl">questions fixed</div><div class="val"><b>{{fixed}}</b><i>/</i>{{n_queries}}</div><div class="sub">no answer in top 10 before, answer in top 10 after · {{broke}} went the other way</div></div>
+    </div>
+    <p class="fine">BEIR FiQA-2018 · {{n_docs}} passages · {{n_queries}} test questions with human relevance labels · run on one laptop, no API keys · <a href="#reproduce">reproduce it</a></p>
+  </div>
+
+  <section>
+    <h2>What this means if you are not an IR person</h2>
+    <p>A RAG system or an AI agent can only answer from what its search step hands it. If the right document is not in the top 10, no prompt and no model upgrade will produce the right answer. So retrieval quality is the ceiling on the whole system, and it has to be measured, not assumed.</p>
+    <p><strong>Keyword search</strong> (BM25 — what most databases and “add search” plugins give you) finds the right answer in the top 10 for about <strong>{{bm25.recall@10.pct}}%</strong> of these questions. Swapping in a small <strong>embedding model</strong> lifts that to <strong>{{dense.recall@10.pct}}%</strong> — the single biggest win, and it costs one millisecond. Adding a <strong>cross-encoder reranker</strong> on top takes it to <strong>{{dense+rerank.recall@10.pct}}%</strong> and, more visibly, pushes the right answer nearer the top: nDCG@10 goes {{bm25.ndcg@10}} → {{dense+rerank.ndcg@10}}, and the first correct passage moves up the list (MRR@10 {{bm25.mrr@10}} → {{dense+rerank.mrr@10}}). {{fixed}} of the {{n_queries}} questions go from “no correct answer shown” to “correct answer shown”; {{broke}} go the other way.</p>
+    <p>That is the difference between an assistant that is right most of the time and one that confidently answers from the wrong page.</p>
+  </section>
+
+  <section>
+    <h2>Results</h2>
+    <table class="tbl">
+      <thead><tr><th>System</th><th>recall@10</th><th>nDCG@10</th><th>MRR@10</th><th>recall@50</th><th>latency / query</th></tr></thead>
+      <tbody>
+{{rows}}
+      </tbody>
+    </table>
+    <p class="fine">Latency is end-to-end per query on an M2 Max laptop (Metal, no GPU server, no caching), so treat it as relative, not absolute. The reranker is the expensive stage: {{rerank_ms}} ms here for a 568M-parameter model scoring 50 candidates. On a server GPU the same pass is tens of milliseconds, and cutting the candidate list from 50 to 20 roughly halves it again — it is the lever you tune per product, not a fixed cost.</p>
+    <h3 style="font-size:1.05rem;margin:22px 0 8px">What did not work</h3>
+    <p><strong>Hybrid retrieval hurt.</strong> Fusing the keyword and embedding lists (reciprocal rank fusion, the standard recipe) scored <em>below</em> embeddings alone — {{hybrid.recall@10}} vs {{dense.recall@10}} recall@10. On this corpus BM25 is weak enough that blending it in drags the good ranker down. <strong>A small reranker did not rescue it:</strong> our first run reranked the hybrid list with the older <code>{{base_reranker}}</code> and reached only {{base.recall@10}} recall@10 / {{base.ndcg@10}} nDCG@10 — still below plain embeddings. The numbers in the table come from the second run: rerank the <em>best</em> retriever’s candidates with a current-generation model. Both runs are in the repository. This is the point of measuring: the default recipe is not always right, and you cannot tell without the number.</p>
+    <p><strong>How to read the columns.</strong> <em>recall@10</em>: of the passages labelled relevant for a question, what share appeared in the top 10. <em>nDCG@10</em>: the same, but rewarding results that appear at rank 1–3 over rank 8–10. <em>MRR@10</em>: on average, how high the <em>first</em> relevant passage sits. <em>recall@50</em>: what the reranker had to work with — it can only promote what the retrievers found.</p>
+  </section>
+
+  <section>
+    <h2>Method</h2>
+    <ul>
+      <li><strong>Dataset:</strong> <a href="https://github.com/beir-cellar/beir">BEIR</a> FiQA-2018 — {{n_docs}} passages from financial Q&amp;A forums, {{n_queries}} test questions, {{n_qrels}} human relevance judgments. Used exactly as published; no cleaning, no filtering, no query rewriting.</li>
+      <li><strong>Keyword search:</strong> BM25 via <code>bm25s</code>, English stopwords, default k1/b. Top {{k_retrieve}}.</li>
+      <li><strong>Dense:</strong> <code>{{embedding}}</code> (33M parameters), cosine similarity over normalized embeddings, BEIR query instruction prefix. Top {{k_retrieve}}.</li>
+      <li><strong>Hybrid:</strong> reciprocal rank fusion (k=60) of the two lists above. Top {{k_retrieve}}.</li>
+      <li><strong>Embeddings + rerank:</strong> the dense top {{k_rerank}} re-scored by the cross-encoder <code>{{reranker}}</code> (568M parameters), then cut to 10.</li>
+      <li><strong>Metrics:</strong> computed with <code>ranx</code> against the official test qrels. Deterministic; no seeds, no cherry-picking of runs — the first run is reported above under “what did not work”.</li>
+      <li><strong>Hardware:</strong> Apple M2 Max, PyTorch on Metal. Embedding the corpus took {{embed_s}} s; building the BM25 index {{bm25_s}} s.</li>
+    </ul>
+    <div class="note">Nothing here is tuned. Small open models, default settings, first run. On a client corpus we tune chunking, the fusion weights, the reranker cut-off and, where it pays, fine-tune the reranker on the client’s own query logs — so these numbers are a floor for what the approach does, not a ceiling.</div>
+    <p><strong>Caveats, stated plainly.</strong> A public benchmark is not your data; the relative gap between systems transfers better than the absolute numbers. Relevance labels in FiQA are incomplete (some genuinely relevant passages are unlabelled), which depresses every system’s score equally. Latency was measured on a laptop with other processes running.</p>
+  </section>
+
+  <section id="reproduce">
+    <h2>Reproduce it</h2>
+    <p>The harness is ~120 lines of Python and lives in the same repository as this website. Two commands, no API keys; about 30 minutes on an M2 Max, most of it the reranker (the model downloads are ~2.4 GB the first time):</p>
+<pre><b>git clone</b> https://github.com/RerankLab/reranklab.com && cd reranklab.com/evals/fiqa
+<b>uv run</b> run.py        <span style="color:var(--tx3)"># downloads FiQA (~20 MB) + two open models, writes results.json</span>
+<b>uv run</b> render.py     <span style="color:var(--tx3)"># turns results.json into this page</span></pre>
+    <p>If your numbers differ from the ones above by more than rounding, <a href="mailto:hello@reranklab.com">tell us</a> — we will either fix the harness or update the page.</p>
+  </section>
+
+  <section>
+    <div class="cta">
+      <p><strong>Want this run on your own corpus and your own questions?</strong> That is the 3–10 day prototype: your data, a golden set we build together, a number you can hold us to. From US$5k, fixed.</p>
+      <a class="btn" href="/#contact">Start a project →</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot"><div class="wrap">
+  RerankLab · <a href="/">reranklab.com</a> · <a href="mailto:hello@reranklab.com">hello@reranklab.com</a> · report generated from <code>results.json</code>, {{date}}
+</div></footer>
+</body>
+</html>

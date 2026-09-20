@@ -420,15 +420,15 @@ main:focus{outline:none}
         </div>
       </div>
 
-      <div class="term" aria-label="Illustrative eval run: a query is retrieved, reranked and scored against a golden set of 240 queries; recall@10 rises from 0.72 to 0.94" role="img">
+      <div class="term" aria-label="Replay of a real eval run on the public FiQA-2018 benchmark: recall@10 rises from 0.30 with keyword search to 0.49 with embeddings and reranking. Full report linked below." role="img">
         <div class="term-bar">
           <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-          <b>eval-run</b><span class="path">· support-kb · golden-set v3</span>
+          <b>eval-run</b><span class="path">· fiqa-2018 · 648 questions</span>
           <span class="clock" id="clock">00:00.000</span><span class="live">live</span>
         </div>
         <div class="stages" id="stages"><span data-s="retrieve">retrieve</span><i>→</i><span data-s="rerank">rerank</span><i>→</i><span data-s="eval">eval</span><i>→</i><span data-s="ship">ship</span></div>
         <div class="term-body" id="tbody"></div>
-        <div class="term-foot"><span>queries <b>240</b></span><span>judge <b>claude-sonnet</b></span><span>CI <b>pass</b></span><span>illustrative run</span></div>
+        <div class="term-foot"><span>passages <b>57,638</b></span><span>labels <b>human</b></span><span>reranker <b>bge-v2-m3</b></span><span>replay of a real run</span></div>
       </div>
     </div>
   </div>
@@ -674,7 +674,7 @@ main:focus{outline:none}
           <li><b>02</b><span>45-minute call the same week. NDA on request.</span></li>
           <li><b>03</b><span>Written prototype scope and fixed price within 48 hours of the call.</span></li>
         </ul>
-        <p class="tz"><b>Ching Yaw Hao, founder · <a href="https://github.com/chingyawhao" rel="me">github.com/chingyawhao</a></b><br>Based in Kuala Lumpur, Malaysia, working globally — overlaps with Asia-Pacific, Europe and US-East hours.</p>
+        <p class="tz"><b>Ching Yaw Hao, founder · <a href="https://chingyawhao.com/" rel="me">chingyawhao.com</a></b><br>Based in Kuala Lumpur, Malaysia, working globally — overlaps with Asia-Pacific, Europe and US-East hours.</p>
       </div>
       <div class="form rv" data-d="1" data-state="idle">
         <form id="cf" novalidate>
@@ -865,15 +865,15 @@ main:focus{outline:none}
     var body = document.getElementById('tbody'), clock = document.getElementById('clock');
     var stages = Array.prototype.slice.call(document.querySelectorAll('#stages span'));
     var RUN = [
-      { c:'usr',  g:'>',  t:'q: "refund policy for annual plans cancelled mid-term"', type:true },
-      { c:'plan', g:'◆',  h:'<b>eval</b>  golden set · 240 queries · baseline vs candidate' },
-      { c:'tool', g:'→',  st:'retrieve', h:'<span class="k">retrieve</span>  hybrid(bm25 + vector)  k=<span class="n">20</span>', ms:142 },
-      { c:'ret',  g:'←',  t:'baseline top-3   pricing-page.md · terms-2019.pdf · refunds.md' },
-      { c:'tool', g:'→',  st:'rerank', h:'<span class="k">rerank</span>  cross-encoder  <span class="n">20</span> → <span class="n">5</span>', ms:38 },
-      { c:'ret',  g:'←',  t:'candidate top-3  refunds.md · annual-billing.md · cancellation.md' },
-      { c:'tool', g:'→',  st:'eval', h:'<span class="k">score</span>  <span class="n">240</span> queries · judge=<span class="s">"claude-sonnet"</span>', ms:1840 },
-      { c:'ok',   g:'✓',  st:'ship', h:'recall@10 <b class="cnt" data-to="0.94">0.72</b> · nDCG@10 <b class="cnt" data-to="0.83">0.54</b> · groundedness <b class="cnt" data-to="0.92">0.61</b>' },
-      { c:'meta', g:'',   t:'CI regression: pass · report + golden set committed to your repo' }
+      { c:'usr',  g:'>',  t:'q: "How do index funds actually work?"', type:true },
+      { c:'plan', g:'◆',  h:'<b>eval</b>  FiQA-2018 · 648 questions · 57,638 passages · human labels' },
+      { c:'tool', g:'→',  st:'retrieve', h:'<span class="k">retrieve</span>  bm25 (baseline)  k=<span class="n">10</span>', ms:1 },
+      { c:'ret',  g:'←',  t:'recall@10 0.296 · right answer shown for 30% of questions' },
+      { c:'tool', g:'→',  h:'<span class="k">retrieve</span>  dense  bge-small  k=<span class="n">50</span>', ms:1 },
+      { c:'tool', g:'→',  st:'rerank', h:'<span class="k">rerank</span>  bge-reranker-v2-m3  <span class="n">50</span> → <span class="n">10</span>', ms:2332 },
+      { c:'tool', g:'→',  st:'eval', h:'<span class="k">score</span>  <span class="n">648</span> queries vs human labels (ranx)' },
+      { c:'ok',   g:'✓',  st:'ship', h:'recall@10 <b class="cnt" data-to="0.49">0.30</b> · nDCG@10 <b class="cnt" data-to="0.43">0.23</b> · MRR@10 <b class="cnt" data-to="0.52">0.29</b>' },
+      { c:'meta', g:'',   t:'158 questions fixed · 23 regressed · full report at reranklab.com/evals/fiqa' }
     ];
     function countUp(el){
       Array.prototype.slice.call(el.querySelectorAll('.cnt')).forEach(function(b){

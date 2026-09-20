@@ -1,0 +1,49 @@
+{
+  "dataset": "BEIR/fiqa test",
+  "n_docs": 57638,
+  "n_queries": 648,
+  "n_qrels": 1706,
+  "k_retrieve": 100,
+  "k_rerank": 50,
+  "models": {
+    "embedding": "BAAI/bge-small-en-v1.5",
+    "reranker": "BAAI/bge-reranker-v2-m3"
+  },
+  "device": "mps",
+  "index_seconds": {
+    "bm25": 3.8,
+    "dense_embed": 154.8
+  },
+  "queries_fixed_vs_bm25": 158,
+  "queries_broken_vs_bm25": 23,
+  "results": {
+    "bm25": {
+      "recall@10": 0.2955,
+      "ndcg@10": 0.2326,
+      "mrr@10": 0.2875,
+      "recall@50": 0.4462,
+      "latency_ms": 0.5
+    },
+    "dense": {
+      "recall@10": 0.4639,
+      "ndcg@10": 0.4035,
+      "mrr@10": 0.4879,
+      "recall@50": 0.6211,
+      "latency_ms": 1.2
+    },
+    "hybrid": {
+      "recall@10": 0.4199,
+      "ndcg@10": 0.3451,
+      "mrr@10": 0.4169,
+      "recall@50": 0.6267,
+      "latency_ms": 1.8
+    },
+    "dense+rerank": {
+      "recall@10": 0.4875,
+      "ndcg@10": 0.4286,
+      "mrr@10": 0.5164,
+      "recall@50": 0.6211,
+      "latency_ms": 2332.4
+    }
+  }
+}

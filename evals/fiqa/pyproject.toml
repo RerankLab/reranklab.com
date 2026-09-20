@@ -1,0 +1,12 @@
+[project]
+name = "reranklab-eval-fiqa"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "bm25s>=0.2",
+  "sentence-transformers>=3.0",
+  "torch>=2.2",
+  "ranx>=0.3",
+  "numpy",
+  "requests",
+]

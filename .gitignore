@@ -4,3 +4,5 @@ node_modules/
 .DS_Store
 .dev.vars
 .indexnow-key
+evals/*/data/
+evals/*/.venv/
