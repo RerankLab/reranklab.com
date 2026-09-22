@@ -1,6 +1,10 @@
 # reranklab.com
 
-Marketing site for RerankLab. One static page served by a Cloudflare Worker, which also proxies the contact form to Discord.
+Site for [RerankLab](https://reranklab.com), an AI engineering studio in Kuala Lumpur, and the reproducible retrieval evals behind its claims.
+
+**Looking for the eval?** → [`evals/fiqa/`](evals/fiqa/) — BM25 vs embeddings vs hybrid vs embeddings + reranker on BEIR FiQA-2018, ~120 lines of Python, no API keys. Report: https://reranklab.com/evals/fiqa/
+
+One static page served by a Cloudflare Worker, which also proxies the contact form to Discord.
 
 ```
 public/          static site (index.html, logo/, og.png, robots.txt, sitemap.xml)
