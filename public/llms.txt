@@ -1,0 +1,25 @@
+# RerankLab
+
+> RerankLab is a senior AI engineering studio in Kuala Lumpur, Malaysia, working globally. It builds custom AI agents, search / RAG / reranking systems, and the software around them. Every build is tested against the client's real questions and ships with a golden set, a CI regression run and a pass-rate the client can quote. Fixed price, code in the client's repository from the first commit. Founded and run by Ching Yaw Hao.
+
+## Facts
+
+- Services: custom AI agents; search, RAG and reranking; custom software and SaaS; AI integration and automation.
+- Pricing: prototypes from US$5,000 (3–10 days); full builds usually US$15,000–50,000, always quoted fixed-price up front.
+- Acceptance is a number agreed before the build: an eval pass-rate on a golden set, plus latency and cost budgets where they matter.
+- Ownership: code, prompts, eval data and infrastructure live in the client's GitHub and cloud accounts. No proprietary runtime, no licence fees.
+- Not a fit for: mobile apps, marketing websites, hourly staff augmentation, or AI strategy engagements with no code at the end.
+- Response time: reply within one business day; 45-minute call the same week; written prototype scope and fixed price within 48 hours of the call.
+- Location: Kuala Lumpur, Malaysia. Overlaps with Asia-Pacific, Europe and US-East working hours.
+- Contact: hello@reranklab.com
+
+## Published evals
+
+- [Keyword search vs embeddings + reranking on FiQA-2018](https://reranklab.com/evals/fiqa/): reproducible retrieval eval on the public BEIR FiQA-2018 benchmark (57,638 passages, 648 questions with human relevance labels). BM25 recall@10 0.295 → 0.487 with a small embedding model plus a cross-encoder reranker; nDCG@10 0.233 → 0.429; 158 of 648 questions fixed. Also reports that hybrid (RRF) fusion scored below embeddings alone on this data. Harness and results are in the repository linked from the page.
+
+## Links
+
+- [Homepage](https://reranklab.com/)
+- [FAQ](https://reranklab.com/#faq): project length, cost, IP ownership, models used, maintenance, what "fixed price" means, what RerankLab does not do.
+- [Contact](https://reranklab.com/#contact)
+- [Founder: Ching Yaw Hao](https://chingyawhao.com/)
