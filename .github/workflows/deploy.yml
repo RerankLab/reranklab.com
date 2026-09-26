@@ -2,11 +2,11 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   workflow_dispatch:
 
 concurrency:
-  group: deploy
+  group: deploy-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -22,8 +22,15 @@ jobs:
       - run: npm ci
       - name: Syntax check
         run: node --check worker.js
-      - name: Deploy to Cloudflare
+      - name: Deploy to production
+        if: github.ref_name == 'main'
         run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 24fc08732657a70daf3b422f8da87583
+      - name: Deploy to staging
+        if: github.ref_name != 'main'
+        run: npx wrangler deploy --env staging
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: 24fc08732657a70daf3b422f8da87583
