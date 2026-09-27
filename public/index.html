@@ -192,8 +192,9 @@ main:focus{outline:none}
 .chat-bar{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1px solid var(--ln);background:rgba(255,255,255,.03)}
 .chat-bar .ava{display:grid;place-items:center;width:34px;height:34px;flex:0 0 auto;border-radius:50%;background:var(--acc-dim);border:1px solid rgba(var(--a),.4);color:var(--acc)}
 .chat-bar .ava svg{width:17px;height:17px}
-.chat-bar b{display:block;font:500 var(--fs-p) var(--sans);color:var(--tx);letter-spacing:-.01em}
-.chat-bar .sub{font:400 var(--fs-sm) var(--mono);color:var(--tx3)}
+.chat-bar > div{min-width:0;flex:1}
+.chat-bar b{display:block;font:500 var(--fs-p) var(--sans);color:var(--tx);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-bar .sub{display:block;font:400 var(--fs-sm) var(--mono);color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chat-bar .tag{margin-left:auto;font:400 var(--fs-xs) var(--mono);color:var(--tx3);border:1px solid var(--ln);border-radius:20px;padding:4px 10px;white-space:nowrap}
 .chat-body{padding:16px;display:flex;flex-direction:column;gap:10px;height:clamp(330px,44vh,455px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--ln2) transparent;-webkit-mask:linear-gradient(180deg,transparent,#000 42px);mask:linear-gradient(180deg,transparent,#000 42px)}
 .chat-body::-webkit-scrollbar{width:6px}
@@ -206,8 +207,8 @@ main:focus{outline:none}
 .msg.hand{align-self:stretch;max-width:100%;background:none;border:1px dashed var(--ln2);color:var(--tx2);font:400 var(--fs-sm)/1.5 var(--mono);border-radius:var(--r2)}
 .msg.hand b{color:var(--acc);font-weight:500}
 .work{align-self:flex-start;max-width:90%;display:flex;flex-direction:column;gap:4px;margin-bottom:-4px;padding-left:2px}
-.work .w{display:flex;align-items:center;gap:8px;font:400 var(--fs-xs)/1.4 var(--mono);color:var(--tx3);opacity:0;animation:msgin .22s var(--ease) forwards}
-.work .w::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--acc);flex:0 0 auto;box-shadow:0 0 7px var(--acc)}
+.work .w{position:relative;display:block;padding-left:15px;font:400 var(--fs-xs)/1.55 var(--mono);color:var(--tx3);opacity:0;animation:msgin .22s var(--ease) forwards}
+.work .w::before{content:"";position:absolute;left:0;top:.52em;width:5px;height:5px;border-radius:50%;background:var(--acc);box-shadow:0 0 7px var(--acc)}
 .work .w b{color:var(--tx2);font-weight:400}
 .msg .src .ms{color:var(--acc);border:1px solid rgba(var(--a),.35);border-radius:20px;padding:1px 7px;margin-left:8px;font-size:.92em}
 .typing{display:inline-flex;gap:4px;align-items:center;height:11px}
@@ -267,6 +268,18 @@ main:focus{outline:none}
 .cs-fine{margin:12px 0 0;font:400 var(--fs-sm)/1.6 var(--sans);color:var(--tx3)}
 @media (max-width:1100px){.cfg{grid-template-columns:1fr}.cfg-sum{position:static;order:-1}}
 @media (max-width:600px){.cfg-grid.two{grid-template-columns:1fr}.opt.sub{margin-left:12px}}
+@media (max-width:640px){
+  .chat-bar{padding:10px 12px;gap:9px}
+  .chat-bar .ava{width:30px;height:30px}
+  .chat-bar .tag{padding:3px 8px;gap:6px}
+  .chat-body{padding:13px 12px;gap:9px}
+  .msg{max-width:92%;padding:9px 12px}
+  .msg .pic{width:126px;height:80px}
+  .work{max-width:100%}
+  /* on a phone the panel is most of the screen: an inner scroller would trap the thumb,
+     so the page scrolls instead and the conversation still auto-advances */
+  .chat-body{overflow:hidden}
+}
 
 /* faq */
 .faq-wrap{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(32px,5vw,80px);align-items:start}
@@ -457,7 +470,7 @@ main:focus{outline:none}
       <div class="chat" aria-label="An example conversation at midnight: a customer sends a photo and asks in Malay whether it is in stock, the assistant identifies the product from your own catalogue, quotes the price and delivery, saves the enquiry, and passes the discount question to a member of staff for the morning." role="img">
         <div class="chat-bar">
           <span class="ava" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 6.2 3.6 3h8.8l1 3.2M2.6 6.2h10.8M2.6 6.2v6.3h10.8V6.2M6.2 12.5V9.1h3.6v3.4"/></svg></span>
-          <div><b>Your business</b><span class="sub" id="chat-sub">online · replies in seconds</span></div>
+          <div><b>Your business</b><span class="sub" id="chat-sub">online</span></div>
           <span class="tag"><i class="mn">11:52 PM</i>an example</span>
         </div>
         <div class="chat-body" id="cbody"></div>
@@ -899,9 +912,9 @@ main:focus{outline:none}
       var el = document.createElement('div'); el.className = 'work'; body.appendChild(el);
       var k = 0;
       (function tick(){
-        if (k >= steps.length) { timer = setTimeout(done, 300); return; }   // the trace stays on screen
+        if (k >= steps.length) { timer = setTimeout(done, 650); return; }   // the trace stays on screen
         var w = document.createElement('div'); w.className = 'w'; w.innerHTML = steps[k++];
-        el.appendChild(w); toBottom(); timer = setTimeout(tick, 320);
+        el.appendChild(w); toBottom(); timer = setTimeout(tick, 780);
       })();
     }
     function trace(steps){
@@ -915,22 +928,24 @@ main:focus{outline:none}
     /* fixed height, scrolls like a real chat, so nothing reflows and the newest line is always visible */
     var i = 0, timer = null;
     function toBottom(){ body.scrollTop = body.scrollHeight; }
+    /* paced for a person reading it for the first time, not for a demo reel */
+    function readMs(t){ return Math.min(5200, 1500 + String(t || '').replace(/<[^>]+>/g, '').length * 16); }
     function step(){
       if (document.hidden || !heroVisible) { timer = null; return; }
       if (i >= TALK.length) {
         timer = setTimeout(function(){
           body.style.transition = 'opacity .35s'; body.style.opacity = '0';
-          setTimeout(function(){ body.innerHTML = ''; body.style.opacity = '1'; i = 0; sub.textContent = 'online · replies in seconds'; step(); }, 380);
-        }, 6500);
+          setTimeout(function(){ body.innerHTML = ''; body.style.opacity = '1'; i = 0; sub.textContent = 'online'; step(); }, 380);
+        }, 7000);
         return;
       }
       var m = TALK[i++];
-      if (m.who === 'them') { bubble(m); sub.textContent = 'typing…'; timer = setTimeout(step, m.pic ? 1100 : 900); return; }
-      sub.textContent = 'online · replies in seconds';
-      var after = function(){ bubble(m); timer = setTimeout(step, m.who === 'hand' ? 1800 : 1400); };
-      if (m.steps) { var dots = typing(); timer = setTimeout(function(){ dots.remove(); working(m.steps, after); }, 500); return; }
+      if (m.who === 'them') { bubble(m); sub.textContent = 'typing…'; timer = setTimeout(step, readMs(m.t) + (m.pic ? 700 : 0)); return; }
+      sub.textContent = 'online';
+      var after = function(){ bubble(m); timer = setTimeout(step, readMs(m.t || m.h) + (m.who === 'hand' ? 1200 : 400)); };
+      if (m.steps) { var dots = typing(); timer = setTimeout(function(){ dots.remove(); working(m.steps, after); }, 900); return; }
       var d2 = typing();
-      timer = setTimeout(function(){ d2.remove(); after(); }, 850);
+      timer = setTimeout(function(){ d2.remove(); after(); }, 1300);
     }
     resumeRun = function(){ if (!timer) step(); };
     step();
