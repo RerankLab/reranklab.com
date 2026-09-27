@@ -940,9 +940,9 @@ main:focus{outline:none}
         return;
       }
       var m = TALK[i++];
-      if (m.who === 'them') { bubble(m); sub.textContent = 'typing…'; timer = setTimeout(step, readMs(m.t) + (m.pic ? 700 : 0)); return; }
-      sub.textContent = 'online';
-      var after = function(){ bubble(m); timer = setTimeout(step, readMs(m.t || m.h) + (m.who === 'hand' ? 1200 : 400)); };
+      if (m.who === 'them') { bubble(m); sub.textContent = 'online'; timer = setTimeout(step, readMs(m.t) + (m.pic ? 700 : 0)); return; }
+      sub.textContent = 'typing…';
+      var after = function(){ sub.textContent = 'online'; bubble(m); timer = setTimeout(step, readMs(m.t || m.h) + (m.who === 'hand' ? 1200 : 400)); };
       if (m.steps) { var dots = typing(); timer = setTimeout(function(){ dots.remove(); working(m.steps, after); }, 900); return; }
       var d2 = typing();
       timer = setTimeout(function(){ d2.remove(); after(); }, 1300);
