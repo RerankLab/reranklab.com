@@ -211,7 +211,7 @@ main:focus{outline:none}
 .work .w::before{content:"";position:absolute;left:0;top:.52em;width:5px;height:5px;border-radius:50%;background:var(--acc);box-shadow:0 0 7px var(--acc)}
 .work .w b{color:var(--tx2);font-weight:400}
 .msg .src .ms{color:var(--acc);border:1px solid rgba(var(--a),.35);border-radius:20px;padding:1px 7px;margin-left:8px;font-size:.92em}
-.work .w:last-child::before{animation:dot 1.1s infinite}
+.work.busy .w:last-child::before{animation:dot 1.1s infinite}
 @keyframes dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.72)}}
 @keyframes msgin{to{opacity:1;transform:none}}
 .msg .ts{display:block;margin-top:5px;font:400 var(--fs-xs) var(--mono);color:var(--tx3);opacity:.75}
@@ -902,10 +902,10 @@ main:focus{outline:none}
     }
     /* the assistant visibly does the work before it answers */
     function working(steps, done){
-      var el = document.createElement('div'); el.className = 'work'; body.appendChild(el);
+      var el = document.createElement('div'); el.className = 'work busy'; body.appendChild(el);
       var k = 0;
       (function tick(){
-        if (k >= steps.length) { timer = setTimeout(done, 650); return; }   // the trace stays on screen
+        if (k >= steps.length) { el.classList.remove('busy'); timer = setTimeout(done, 650); return; }   // the trace stays on screen
         var w = document.createElement('div'); w.className = 'w'; w.innerHTML = steps[k++];
         el.appendChild(w); toBottom(); timer = setTimeout(tick, 780);
       })();
