@@ -190,18 +190,22 @@ main:focus{outline:none}
 /* ---------- hero chat ---------- */
 .chat{position:relative;min-width:0;display:flex;flex-direction:column;border:1px solid var(--ln2);border-radius:var(--r);background:linear-gradient(180deg,#12141b 0%,#0c0e13 100%);box-shadow:0 30px 80px -40px rgba(0,0,0,.9);overflow:hidden}
 .chat-bar{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1px solid var(--ln);background:rgba(255,255,255,.03)}
-.chat-bar .ava{display:grid;place-items:center;width:34px;height:34px;flex:0 0 auto;border-radius:50%;background:var(--acc-dim);border:1px solid rgba(var(--a),.4);color:var(--acc);font:500 var(--fs-sm) var(--mono)}
+.chat-bar .ava{display:grid;place-items:center;width:34px;height:34px;flex:0 0 auto;border-radius:50%;background:var(--acc-dim);border:1px solid rgba(var(--a),.4);color:var(--acc)}
+.chat-bar .ava svg{width:17px;height:17px}
 .chat-bar b{display:block;font:500 var(--fs-p) var(--sans);color:var(--tx);letter-spacing:-.01em}
 .chat-bar .sub{font:400 var(--fs-sm) var(--mono);color:var(--tx3)}
 .chat-bar .tag{margin-left:auto;font:400 var(--fs-xs) var(--mono);color:var(--tx3);border:1px solid var(--ln);border-radius:20px;padding:4px 10px;white-space:nowrap}
-.chat-body{padding:16px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.chat-body{padding:16px;display:flex;flex-direction:column;gap:10px;height:clamp(330px,44vh,455px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--ln2) transparent;-webkit-mask:linear-gradient(180deg,transparent,#000 42px);mask:linear-gradient(180deg,transparent,#000 42px)}
+.chat-body::-webkit-scrollbar{width:6px}
+.chat-body::-webkit-scrollbar-thumb{background:var(--ln2);border-radius:3px}
+.chat-body::-webkit-scrollbar-track{background:transparent}
 .msg{max-width:86%;padding:10px 13px;border-radius:14px;font:400 var(--fs-p)/1.5 var(--sans);opacity:0;transform:translateY(6px);animation:msgin .36s var(--ease) forwards}
-.msg.them{align-self:flex-start;background:rgba(255,255,255,.07);color:var(--tx);border-bottom-left-radius:5px}
-.msg.us{align-self:flex-end;background:var(--acc-dim);border:1px solid rgba(var(--a),.35);color:var(--tx);border-bottom-right-radius:5px}
+.msg.them{align-self:flex-end;background:rgba(255,255,255,.07);color:var(--tx);border-bottom-right-radius:5px}
+.msg.us{align-self:flex-start;background:var(--acc-dim);border:1px solid rgba(var(--a),.35);color:var(--tx);border-bottom-left-radius:5px}
 .msg .src{display:block;margin-top:7px;padding-top:7px;border-top:1px solid var(--ln);font:400 var(--fs-xs)/1.4 var(--mono);color:var(--tx3)}
 .msg.hand{align-self:stretch;max-width:100%;background:none;border:1px dashed var(--ln2);color:var(--tx2);font:400 var(--fs-sm)/1.5 var(--mono);border-radius:var(--r2)}
 .msg.hand b{color:var(--acc);font-weight:500}
-.work{align-self:flex-end;max-width:86%;border:1px dashed var(--ln2);border-radius:var(--r2);padding:9px 12px;display:flex;flex-direction:column;gap:5px;background:rgba(255,255,255,.02)}
+.work{align-self:flex-start;max-width:90%;display:flex;flex-direction:column;gap:4px;margin-bottom:-4px;padding-left:2px}
 .work .w{display:flex;align-items:center;gap:8px;font:400 var(--fs-xs)/1.4 var(--mono);color:var(--tx3);opacity:0;animation:msgin .22s var(--ease) forwards}
 .work .w::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--acc);flex:0 0 auto;box-shadow:0 0 7px var(--acc)}
 .work .w b{color:var(--tx2);font-weight:400}
@@ -212,7 +216,7 @@ main:focus{outline:none}
 @keyframes dot{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
 @keyframes msgin{to{opacity:1;transform:none}}
 .msg .ts{display:block;margin-top:5px;font:400 var(--fs-xs) var(--mono);color:var(--tx3);opacity:.75}
-.msg.us .ts{text-align:right}
+.msg.them .ts{text-align:right}
 .msg .pic{display:block;width:150px;height:96px;border-radius:9px;margin-bottom:8px;background:linear-gradient(145deg,#3a3f4b,#22252e);border:1px solid var(--ln2);position:relative;overflow:hidden}
 .msg .pic::before{content:"";position:absolute;left:18px;right:18px;bottom:16px;height:34px;border-radius:5px 5px 2px 2px;background:#4a505e;box-shadow:0 -9px 0 -3px #565d6d}
 .msg .pic::after{content:"photo";position:absolute;top:7px;left:9px;font:400 var(--fs-xs) var(--mono);color:rgba(255,255,255,.5)}
@@ -450,10 +454,10 @@ main:focus{outline:none}
         </div>
       </div>
 
-      <div class="chat" aria-label="An example conversation at midnight: a customer sends a photo and asks in Malay whether it is in stock, the assistant identifies the product from the shop's own catalogue, quotes the price and delivery, saves the enquiry, and passes the discount question to a member of staff for the morning." role="img">
+      <div class="chat" aria-label="An example conversation at midnight: a customer sends a photo and asks in Malay whether it is in stock, the assistant identifies the product from your own catalogue, quotes the price and delivery, saves the enquiry, and passes the discount question to a member of staff for the morning." role="img">
         <div class="chat-bar">
-          <span class="ava" aria-hidden="true">SL</span>
-          <div><b>Seng Lee Furnishing</b><span class="sub" id="chat-sub">online · replies in seconds</span></div>
+          <span class="ava" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 6.2 3.6 3h8.8l1 3.2M2.6 6.2h10.8M2.6 6.2v6.3h10.8V6.2M6.2 12.5V9.1h3.6v3.4"/></svg></span>
+          <div><b>Your business</b><span class="sub" id="chat-sub">online · replies in seconds</span></div>
           <span class="tag"><i class="mn">11:52 PM</i>an example</span>
         </div>
         <div class="chat-body" id="cbody"></div>
@@ -883,41 +887,41 @@ main:focus{outline:none}
         if (m.src) { var s2 = document.createElement('span'); s2.className = 'src'; s2.textContent = m.src; if (m.ms) { var c = document.createElement('b'); c.className = 'ms'; c.textContent = m.ms; s2.appendChild(c); } el.appendChild(s2); }
         if (m.ts)  { var t2 = document.createElement('span'); t2.className = 'ts';  t2.textContent = m.ts;  el.appendChild(t2); }
       }
-      body.appendChild(el); return el;
+      body.appendChild(el); toBottom(); return el;
     }
     function typing(){
       var el = document.createElement('div');
       el.className = 'msg us'; el.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>';
-      body.appendChild(el); return el;
+      body.appendChild(el); toBottom(); return el;
     }
     /* the assistant visibly does the work before it answers */
     function working(steps, done){
       var el = document.createElement('div'); el.className = 'work'; body.appendChild(el);
       var k = 0;
       (function tick(){
-        if (k >= steps.length) { timer = setTimeout(function(){ el.remove(); done(); }, 260); return; }
+        if (k >= steps.length) { timer = setTimeout(done, 300); return; }   // the trace stays on screen
         var w = document.createElement('div'); w.className = 'w'; w.innerHTML = steps[k++];
-        el.appendChild(w); timer = setTimeout(tick, 320);
+        el.appendChild(w); toBottom(); timer = setTimeout(tick, 320);
       })();
     }
-    if (RM) { TALK.forEach(bubble); return; }
-
-    /* reserve the finished height once so the hero never reflows mid-conversation */
-    var measured = false, i = 0, timer = null;
-    function measure(){
-      if (measured || body.offsetWidth < 160) return;
-      body.style.visibility = 'hidden'; TALK.forEach(bubble);
-      body.style.minHeight = body.offsetHeight + 'px';
-      body.innerHTML = ''; body.style.visibility = ''; measured = true;
+    function trace(steps){
+      var w = document.createElement('div'); w.className = 'work';
+      steps.forEach(function(t){ var d = document.createElement('div'); d.className = 'w'; d.innerHTML = t; w.appendChild(d); });
+      body.appendChild(w); toBottom(); return w;
     }
+    function renderAll(){ TALK.forEach(function(m){ if (m.steps) trace(m.steps); bubble(m); }); }
+    if (RM) { renderAll(); return; }
+
+    /* fixed height, scrolls like a real chat, so nothing reflows and the newest line is always visible */
+    var i = 0, timer = null;
+    function toBottom(){ body.scrollTop = body.scrollHeight; }
     function step(){
       if (document.hidden || !heroVisible) { timer = null; return; }
-      if (i === 0) measure();
       if (i >= TALK.length) {
         timer = setTimeout(function(){
-          body.style.transition = 'opacity .4s'; body.style.opacity = '0';
-          setTimeout(function(){ body.innerHTML = ''; body.style.opacity = '1'; i = 0; sub.textContent = 'online · replies in seconds'; step(); }, 450);
-        }, 4200);
+          body.style.transition = 'opacity .35s'; body.style.opacity = '0';
+          setTimeout(function(){ body.innerHTML = ''; body.style.opacity = '1'; i = 0; sub.textContent = 'online · replies in seconds'; step(); }, 380);
+        }, 6500);
         return;
       }
       var m = TALK[i++];
